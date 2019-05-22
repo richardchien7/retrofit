@@ -29,6 +29,9 @@ public interface JsonPlaceHolderApi {
     @GET("posts")
     Call<List<Post>> getPosts(@QueryMap Map<String,String> parameters);
 
+    @GET("hi?api_key=keyKsJNFtZhy4rUjk")
+    Call<List<fields>> getPosts();
+
     @GET("posts/{id}/comments")
     Call<List<Comment>> getComments(@Path("id") int postId);
 
@@ -55,6 +58,9 @@ public interface JsonPlaceHolderApi {
 
     @PATCH("posts/{id}")
     Call<Post> patchPost(@Path("id") int id, @Body Post post);
+
+    @PATCH("hi/recAMmLkg1jdFJZe9?api_key=keyKsJNFtZhy4rUjk")
+    Call<fields> patchPost(@Body Post post);
 
     @DELETE("posts/{id}")
     Call<Void> deletePost(@Path("id") int id);

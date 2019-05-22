@@ -9,7 +9,7 @@ public class Post {
     @SerializedName("body")
     private String text;
 
-    private String test;
+
 
     public Post(int userId, String title, String text) {
         this.userId = userId;

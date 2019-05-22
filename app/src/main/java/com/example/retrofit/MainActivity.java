@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView textViewResult;
 
     private JsonPlaceHolderApi jsonPlaceHolderApi;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,62 +31,86 @@ public class MainActivity extends AppCompatActivity {
         Gson gson = new GsonBuilder().serializeNulls().create();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://jsonplaceholder.typicode.com/")
+                .baseUrl("https://api.airtable.com/v0/appPgLBEOqAYHOMnX/")//https://jsonplaceholder.typicode.com/
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
 
-        //getPosts();
+        getPosts();
         //getComments();
         //createPost();
         //updatePost();
-        deletePost();
+        //deletePost();
     }
-    private void getPosts(){
+
+    private void getPosts() {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("userId", "1");
         parameters.put("_sort", "id");
-        parameters.put("_order","desc");
+        parameters.put("_order", "desc");
 
-        Call<List<Post>> call = jsonPlaceHolderApi.getPosts(parameters);
-
-        call.enqueue(new Callback<List<Post>>() {
+        Call<List<fields>> call = jsonPlaceHolderApi.getPosts();
+        call.enqueue(new Callback<List<fields>>() {
             @Override
-            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
-                if(!response.isSuccessful()){
+            public void onResponse(Call<List<fields>> call, Response<List<fields>> response) {
+                if (!response.isSuccessful()) {
                     textViewResult.setText("Code: " + response.code());
                     return;
                 }
-                List<Post> posts = response.body();
-                for(Post post: posts){
+                List<fields> fields = response.body();
+                for (fields post : fields) {
                     String content = "";
-                    content += "ID: " + post.getId() + "\n";
-                    content += "User ID: " + post.getUserId() + "\n";
-                    content += "Title: " + post.getTitle() + "\n";
-                    content += "Text: " + post.getText() + "\n\n";
-
+                    content += "Notes: " + post.getNotes() + "\n";
+                    content += "Name: " + post.getName() + "\n";
                     textViewResult.append(content);
                 }
+
             }
 
             @Override
-            public void onFailure(Call<List<Post>> call, Throwable t) {
-                textViewResult.setText(t.getMessage());
+            public void onFailure(Call<List<fields>> call, Throwable t) {
+
+                textViewResult.setText(call.toString()+"\n"+t.getMessage());
             }
         });
+//        call.enqueue(new Callback<List<Post>>() {
+//            @Override
+//            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
+//                if(!response.isSuccessful()){
+//                    textViewResult.setText("Code: " + response.code());
+//                    return;
+//                }
+//                List<Post> posts = response.body();
+//                for(Post post: posts){
+//                    String content = "";
+//                    content += "ID: " + post.getId() + "\n";
+//                    content += "User ID: " + post.getUserId() + "\n";
+//                    content += "Title: " + post.getTitle() + "\n";
+//                    content += "Text: " + post.getText() + "\n\n";
+//
+//                    textViewResult.append(content);
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<Post>> call, Throwable t) {
+//                textViewResult.setText(t.getMessage());
+//            }
+//        });
     }
-    private void getComments(){
+
+    private void getComments() {
         Call<List<Comment>> call = jsonPlaceHolderApi.getComments("posts/3/comments");
 
         call.enqueue(new Callback<List<Comment>>() {
             @Override
             public void onResponse(Call<List<Comment>> call, Response<List<Comment>> response) {
-                if(!response.isSuccessful()) {
+                if (!response.isSuccessful()) {
                     textViewResult.setText("Code: " + response.code());
                     return;
                 }
                 List<Comment> comments = response.body();
-                for(Comment comment: comments){
+                for (Comment comment : comments) {
                     String content = "";
                     content += "ID: " + comment.getId() + "\n";
                     content += "Post ID: " + comment.getPostId() + "\n";
@@ -104,8 +129,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private void createPost(){
-        Post post = new Post(23,"NewTitle", "New Text");
+
+    private void createPost() {
+        Post post = new Post(23, "NewTitle", "New Text");
 
         Map<String, String> fields = new HashMap<>();
         fields.put("userId", "25");
@@ -116,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
         call.enqueue(new Callback<Post>() {
             @Override
             public void onResponse(Call<Post> call, Response<Post> response) {
-                if(!response.isSuccessful()) {
+                if (!response.isSuccessful()) {
                     textViewResult.setText("Code: " + response.code());
                     return;
                 }
@@ -140,15 +166,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void updatePost(){
-        Post post = new Post(12,null,"New Text");
+    private void updatePost() {
+        Post post = new Post(12, null, "New Text");
 
         Call<Post> call = jsonPlaceHolderApi.patchPost(5, post);
         call.enqueue(new Callback<Post>() {
             @Override
             public void onResponse(Call<Post> call, Response<Post> response) {
 
-                if(!response.isSuccessful()) {
+                if (!response.isSuccessful()) {
                     textViewResult.setText("Code: " + response.code());
                     return;
                 }
@@ -171,8 +197,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-private void deletePost(){
-        Call<Void>  call = jsonPlaceHolderApi.deletePost(5);
+
+    private void deletePost() {
+        Call<Void> call = jsonPlaceHolderApi.deletePost(5);
 
         call.enqueue(new Callback<Void>() {
             @Override
@@ -185,5 +212,5 @@ private void deletePost(){
                 textViewResult.setText(t.getMessage());
             }
         });
-}
+    }
 }
